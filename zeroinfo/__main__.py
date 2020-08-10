@@ -7,8 +7,9 @@ import click
 import logging
 
 from .__init__ import __version__
-from .client import Client
 from .server import Server
+
+from .raft.state import State
 
 
 log = logging.getLogger('zeroinfo')
@@ -28,18 +29,6 @@ def print_version(ctx, param, value):
 @click.option('--version', is_flag=True, callback=print_version, expose_value=False, is_eager=True)
 def run():
     """Runs the application."""
-
-    loop = asyncio.get_event_loop()
-
-    server = Server(loop)
-    server.start()
-
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        pass
-    loop.close()
-
 
 @click.group()
 @click.option('--version',
@@ -70,14 +59,14 @@ def server():
     loop.close()
 
 @cli.command()
-def client():
-    """Run the server."""
+def test():
+    """Run the test."""
 
     print('Press CTRL+C to exit...')
     loop = asyncio.get_event_loop()
 
-    client_instance = Client(loop)
-    client_instance.start()
+    client_instance = State(loop)
+    client_instance.set_timeout()
 
     try:
         loop.run_forever()
